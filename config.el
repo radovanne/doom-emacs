@@ -9,6 +9,28 @@
 (setq user-full-name "Nedeljko Radovanovic"
       user-mail-address "nradovanovic97@gmail.com")
 
+;; Basic behaviour configuration:
+(setq doom-localleader-key ",")
+
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)   ; Sets normal scrolling behaviour
+
+(setq scroll-margin 10)     ; Sets scroll margin to keep the cursor/point from getting within a certain distance of the top or bottom of the window
+
+;; Disable line numbers for some modes
+;; (dolist (mode '(org-mode-hook
+;;                 term-mode-hook
+;;                 shell-mode-hook
+;;                 treemacs-mode-hook
+;;                 eshell-mode-hook))
+;;   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; set transparent background
+
+;; (set-frame-parameter (selected-frame) 'alpha '(95 . 95))
+;; (add-to-list 'default-frame-alist '(alpha . (95 . 95)))
+
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
 ;; - `doom-font' -- the primary font to use
@@ -82,7 +104,11 @@
   ;; (map! :desc "ace paren" :n "gp" #'lispy-ace-paren)
 
   (set-popup-rule!
-    "^\\*cider-repl" :quit nil :ttl nil :side 'right :size 0.35))
+    "^\\*cider-repl" :quit nil :ttl nil :side 'right :size 0.35)
+
+  (evil-define-key 'normal clojure-mode-map (kbd ">") 'paredit-forward-slurp-sexp)
+  (evil-define-key 'normal clojure-mode-map (kbd "<") 'paredit-forward-barf-sexp)
+  (evil-define-key 'normal clojure-mode-map (kbd "M-r") 'paredit-raise-sexp))
 
 ;; Maximize windows when starting
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
