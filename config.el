@@ -18,13 +18,20 @@
 
 (setq scroll-margin 10)     ; Sets scroll margin to keep the cursor/point from getting within a certain distance of the top or bottom of the window
 
+(defvar +format-on-save-disabled-modes
+  '(sql-mode           ; sqlformat is currently broken
+    tex-mode           ; latexindent is broken
+    latex-mode
+    org-msg-edit-mode
+    clojure-mode))
+
 ;; Disable line numbers for some modes
-;; (dolist (mode '(org-mode-hook
-;;                 term-mode-hook
-;;                 shell-mode-hook
-;;                 treemacs-mode-hook
-;;                 eshell-mode-hook))
-;;   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                treemacs-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; set transparent background
 
@@ -122,57 +129,21 @@
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
-;; (dap-mode 1)
-;; (dap-ui-mode 1)
-;; (dap-tooltip-mode 1)
-;; (tooltip-mode 1)
-;; (dap-ui-controls-mode 1)
-
-;; (defun get-rust-binary ()
-;;   "Prompt user for which binary to use and return the filename."
-;;   (interactive)
-;;   (let* ((bin-name (read-string "Enter the target to execute: "))
-;;          (filename (concat (projectile-project-root) "target/debug/" bin-name))
-;;          (does-not-exist (not (file-exists-p filename))))
-;;     (when does-not-exist (message "No binary found for especified target %s!" bin-name))
-;;     filename))
-;; (defun get-rust-args ()
-;;   "Prompt user for args to pass."
-;;   (interactive)
-;;   (let ((args-string (read-string "Enter the target arguments: ")))
-;;     (split-string args-string)))
-;; (defun dap-lldb-rust--populate-start-file-args (conf)
-;;   "Populate CONF with the required arguments."
-;;   (-> conf
-;;       (dap--put-if-absent :dap-server-path '("/usr/bin/lldb-vscode" "1441"))
-;;       (dap--put-if-absent :port 1441)
-;;       (dap--put-if-absent :type "lldb")
-;;       (dap--put-if-absent :cwd (car `(,(projectile-project-root))))
-;;       (dap--put-if-absent :program (car `(,(get-rust-binary))))
-;;       (dap--put-if-absent :name "Rust Debug")
-;;       (dap--put-if-absent :program-to-start "cargo build")
-;;       (dap--put-if-absent :args (car `(,(get-rust-args))))))
-;; (add-hook 'rustic-mode-hook (lambda ()
-;;                               (dap-register-debug-provider "lldb" 'dap-lldb-rust--populate-start-file-args)
-;;                               (dap-register-debug-template "Rust Run Configuration"
-;;                                                            `(:type "lldb"
-;;                                                              :cwd ,(projectile-project-root)
-;;                                                              :request "launch"))))
-
-;; (after! dap-mode
-;;   (require 'dap-codelldb)
-;;   (require 'dap-cpptools)
-
-;;   (setq dap-auto-configure-features '(sessions locals controls tooltip))
-
-;;   (dap-register-debug-template
-;;    "LLDB::Run Rust"
-;;    (list :type "lldb"
-;;          :request "launch"
-;;          :name "LLDB::Run"
-;;          :miDebuggerPath "~/.cargo/bin/rust-lldb"
-;;          :target nil
-;;          :cwd nil
-;;          :program "~/my_app/target/debug/my_app"
-;;          ))
-;;   )
+(use-package dap-mode
+  :ensure t
+  :if (executable-find "lldb-vscode")
+  :custom
+  (dap-lldb-debug-program (list (executable-find "lldb-vscode")))
+  (dap-lldb-debugged-program-function (lambda () (read-file-name "Select file to debug.")))
+  (dap-auto-configure-features '(sessions locals controls tooltip))
+  :config
+  (require 'dap-lldb)
+  (require 'dap-cpptools)
+  (dap-register-debug-template
+   "Debug Rust"
+   (list :type "lldb-vscode"
+         :request "launch"
+         :name "LLDB::Run"
+         :miDebuggerPath (executable-find "~/.cargo/bin/rust-lldb")
+         :target nil
+         :cwd nil)))
