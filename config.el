@@ -18,13 +18,20 @@
 
 (setq scroll-margin 10)     ; Sets scroll margin to keep the cursor/point from getting within a certain distance of the top or bottom of the window
 
+(defvar +format-on-save-disabled-modes
+  '(sql-mode           ; sqlformat is currently broken
+    tex-mode           ; latexindent is broken
+    latex-mode
+    org-msg-edit-mode
+    clojure-mode))
+
 ;; Disable line numbers for some modes
-;; (dolist (mode '(org-mode-hook
-;;                 term-mode-hook
-;;                 shell-mode-hook
-;;                 treemacs-mode-hook
-;;                 eshell-mode-hook))
-;;   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                treemacs-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; set transparent background
 
@@ -122,6 +129,7 @@
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
+<<<<<<< HEAD
 (dap-mode 1)
 (dap-ui-mode 1)
 (dap-tooltip-mode 1)
@@ -157,3 +165,23 @@
                                                            `(:type "lldb"
                                                              :cwd ,(projectile-project-root)
                                                              :request "launch"))))
+=======
+(use-package dap-mode
+  :ensure t
+  :if (executable-find "lldb-vscode")
+  :custom
+  (dap-lldb-debug-program (list (executable-find "lldb-vscode")))
+  (dap-lldb-debugged-program-function (lambda () (read-file-name "Select file to debug.")))
+  (dap-auto-configure-features '(sessions locals controls tooltip))
+  :config
+  (require 'dap-lldb)
+  (require 'dap-cpptools)
+  (dap-register-debug-template
+   "Debug Rust"
+   (list :type "lldb-vscode"
+         :request "launch"
+         :name "LLDB::Run"
+         :miDebuggerPath (executable-find "~/.cargo/bin/rust-lldb")
+         :target nil
+         :cwd nil)))
+>>>>>>> origin/master
