@@ -43,7 +43,7 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 14))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 13))
 
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -144,8 +144,7 @@
 (defun dap-lldb-rust--populate-start-file-args (conf)
   "Populate CONF with the required arguments."
   (-> conf
-      (dap--put-if-absent :dap-server-path '("/usr/bin/lldb-vscode" "1441"))
-      (dap--put-if-absent :port 1441)
+      (dap--put-if-absent :dap-server-path '("/opt/homebrew/opt/llvm/bin/lldb-vscod"))
       (dap--put-if-absent :type "lldb")
       (dap--put-if-absent :cwd (car `(,(projectile-project-root))))
       (dap--put-if-absent :program (car `(,(get-rust-binary))))
