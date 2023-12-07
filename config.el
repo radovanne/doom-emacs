@@ -50,7 +50,7 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 14))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 13))
 
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -132,6 +132,43 @@
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
+<<<<<<< HEAD
+(dap-mode 1)
+(dap-ui-mode 1)
+(dap-tooltip-mode 1)
+(tooltip-mode 1)
+(dap-ui-controls-mode 1)
+
+(defun get-rust-binary ()
+  "Prompt user for which binary to use and return the filename."
+  (interactive)
+  (let* ((bin-name (read-string "Enter the target to execute: "))
+         (filename (concat (projectile-project-root) "target/debug/" bin-name))
+         (does-not-exist (not (file-exists-p filename))))
+    (when does-not-exist (message "No binary found for especified target %s!" bin-name))
+    filename))
+(defun get-rust-args ()
+  "Prompt user for args to pass."
+  (interactive)
+  (let ((args-string (read-string "Enter the target arguments: ")))
+    (split-string args-string)))
+(defun dap-lldb-rust--populate-start-file-args (conf)
+  "Populate CONF with the required arguments."
+  (-> conf
+      (dap--put-if-absent :dap-server-path '("/opt/homebrew/opt/llvm/bin/lldb-vscod"))
+      (dap--put-if-absent :type "lldb")
+      (dap--put-if-absent :cwd (car `(,(projectile-project-root))))
+      (dap--put-if-absent :program (car `(,(get-rust-binary))))
+      (dap--put-if-absent :name "Rust Debug")
+      (dap--put-if-absent :program-to-start "cargo build")
+      (dap--put-if-absent :args (car `(,(get-rust-args))))))
+(add-hook 'rustic-mode-hook (lambda ()
+                              (dap-register-debug-provider "lldb" 'dap-lldb-rust--populate-start-file-args)
+                              (dap-register-debug-template "Rust Run Configuration"
+                                                           `(:type "lldb"
+                                                             :cwd ,(projectile-project-root)
+                                                             :request "launch"))))
+=======
 (use-package dap-mode
   :ensure t
   :if (executable-find "lldb-vscode")
@@ -150,3 +187,4 @@
          :miDebuggerPath (executable-find "~/.cargo/bin/rust-lldb")
          :target nil
          :cwd nil)))
+>>>>>>> origin/master
