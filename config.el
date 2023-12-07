@@ -107,15 +107,18 @@
   (map! (:localleader
          (:map clojure-mode-map
                (:prefix ("g" . "goto")
-                        "g" #'lsp-find-definition))))
-  ;; (map! :desc "ace paren" :n "gp" #'lispy-ace-paren)
+                        "g" #'lsp-find-definition))
+         ))
+  (map! :desc "ace paren" :n "gp" #'lispy-ace-paren)
 
-  (set-popup-rule!
-    "^\\*cider-repl" :quit nil :ttl nil :side 'right :size 0.35)
 
   (evil-define-key 'normal clojure-mode-map (kbd ">") 'paredit-forward-slurp-sexp)
   (evil-define-key 'normal clojure-mode-map (kbd "<") 'paredit-forward-barf-sexp)
   (evil-define-key 'normal clojure-mode-map (kbd "M-r") 'paredit-raise-sexp))
+
+(after! cider
+  (set-popup-rule!
+    "^\\*cider-repl" :quit nil :ttl nil :side 'right :size 0.35))
 
 ;; Maximize windows when starting
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
